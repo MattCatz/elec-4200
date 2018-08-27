@@ -39,13 +39,13 @@ begin
 --
 --   Example: A<= (D1 and not D2) or D0;
 
-A <=  not (D1 or (D2 and D0) or (not D0 and not D2));
+A <=  ((D2 and not D0) or (not D2 and not D1 and D0));
 B <=  not (not D2 or (D0 and D1) or (not D0 and not D1));
 C <=  not (not D1 or D0 or D2);
-D <=  not ((not D2 and not D0) or (not D2 and not D1) or (D1 and not D0) or (D2 and not D1 and D0));
-E <=  not (D1 and not D0);
-F <=  not ((not D2 and D0) or (D1 and not D2) or (D1 and D2));
-G <=  not ((D2 and not D1) or (not D2 and D1) or (D1 and not D2));
+D <=  ((D2 and not D1) or (D2 and D0) or (not D1 and D0));
+E <=  ((D1 and D0) or (not D2 and D0) or (D2 and not D1 and not D0));
+F <= ((not D2 and D0) or (not D2 and D1) or (D1 and D0));
+G <=  ((not D2 and not D1) or (D2 and D1 and D0));
 
 --To use vectors, the process is exactly the same, but instead of individual bits,
 --   specify bits within a vector via parantheses; Example: D(1).

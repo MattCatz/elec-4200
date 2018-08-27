@@ -60,7 +60,7 @@ architecture behav of OctalDecoder_tb is
       D2 <= test_vectors(i).D2;
       D1 <= test_vectors(i).D1;
       D0 <= test_vectors(i).D0;
-      wait for 1 ns;
+      wait for 2 ns;
       -- Check for the results
       assert A = test_vectors(i).A report "Failed A";
       assert B = test_vectors(i).B report "Failed B";
