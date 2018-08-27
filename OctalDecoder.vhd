@@ -39,7 +39,7 @@ begin
 --
 --   Example: A<= (D1 and not D2) or D0;
 
-A <=  ((D2 and not D0) or (not D1 and (D2 XOR D0)));
+A <=  ((not D1 and (D2 XOR D0)));
 B <=  (D2 and (D1 XOR D0));
 C <=  (not D2 and D1 and not D0);
 D <=  ((not D1 and D0) or (D2 and (D1 XNOR D0)));
