@@ -16,15 +16,15 @@ use IEEE.STD_LOGIC_1164.ALL;
 -- "entity" describes the interface to this component
 entity OctalDecoder is
     port (
-			D2, D1, D0    : in  STD_LOGIC;   --These define the three decoder inputs.
-			A,B,C,D,E,F,G : out STD_LOGIC    --These define the outputs, one for each segment.
-			                                 --Feel free to rename signals to match your prelab.
-			
-			--To use vectors rather than bits, comment out the lines with D2-0 and A-G
-			--Uncomment the following two lines
-			--D        : in  STD_LOGIC_VECTOR (2 downto 0);
-            --Segments : out  STD_LOGIC_VECTOR (6 downto 0)
-			);
+      -- D2, D1, D0    : in  STD_LOGIC;   --These define the three decoder inputs.
+      -- A,B,C,D,E,F,G : out STD_LOGIC    --These define the outputs, one for each segment.
+                                       --Feel free to rename signals to match your prela.
+      
+      --To use vectors rather than bits, comment out the lines with D2-0 and A-G
+      --Uncomment the following two lines
+      D        : in  STD_LOGIC_VECTOR (2 downto 0);
+      Segments : out  STD_LOGIC_VECTOR (6 downto 0)
+      );
 end OctalDecoder;
 
 -- "architecture" describes the implementation of this component
@@ -39,13 +39,13 @@ begin
 --
 --   Example: A<= (D1 and not D2) or D0;
 
-A <=  ((not D1 and (D2 XOR D0)));
-B <=  (D2 and (D1 XOR D0));
-C <=  (not D2 and D1 and not D0);
-D <=  ((not D1 and D0) or (D2 and (D1 XNOR D0)));
-E <=  ((not D2 and D0) or (D2 and (D1 XNOR D0)));
-F <=  ((D1 and D0) or (not D2 and (D1 XOR D0)));
-G <=  ((not D2 and not D1) or (D0 and (D2 XNOR D1)));
+-- A <=  ((not D1 and (D2 XOR D0)));
+-- B <=  (D2 and (D1 XOR D0));
+-- C <=  (not D2 and D1 and not D0);
+-- D <=  ((not D1 and D0) or (D2 and (D1 XNOR D0)));
+-- E <=  ((not D2 and D0) or (D2 and (D1 XNOR D0)));
+-- F <=  ((D1 and D0) or (not D2 and (D1 XOR D0)));
+-- G <=  ((not D2 and not D1) or (D0 and (D2 XNOR D1)));
 
 --To use vectors, the process is exactly the same, but instead of individual bits,
 --   specify bits within a vector via parantheses; Example: D(1).
@@ -54,12 +54,12 @@ G <=  ((not D2 and not D1) or (D0 and (D2 XNOR D1)));
 --
 --Example: Segments(6) <= (D(1) and not D(2)) or D(0);
 --
--- Segments(6) <=  ;
--- Segments(5) <=  ;
--- Segments(4) <=  ;
--- Segments(3) <=  ;
--- Segments(2) <=  ;
--- Segments(1) <=  ;
--- Segments(0) <=  ;
+Segments(6) <=  ((not D(1) and (D(2) XOR D(0))));
+Segments(5) <=  (D(2) and (D(1) XOR D(0)));
+Segments(4) <=  (not D(2) and D(1) and not D(0));
+Segments(3) <=  ((not D(1) and D(0)) or (D(2) and (D(1) XNOR D(0))));
+Segments(2) <=  ((not D(2) and D(0)) or (D(2) and (D(1) XNOR D(0))));
+Segments(1) <=  ((D(1) and D(0)) or (not D(2) and (D(1) XOR D(0))));
+Segments(0) <=  ((not D(2) and not D(1)) or (D(0) and (D(2) XNOR D(1))));
 
 end Behavioral;
