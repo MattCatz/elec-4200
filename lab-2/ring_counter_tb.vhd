@@ -25,7 +25,7 @@ architecture testbench of ring_counter_tb is
   signal RST, PB : STD_LOGIC;
   signal C : STD_LOGIC_VECTOR (1 downto 0);
   signal O : STD_LOGIC_VECTOR (3 downto 0);
-  constant half_period : TIME := 5 ms;
+  constant half_period : TIME := 5 ns;
   
   begin
     ring_counter: Moore_FSM_Equations_FD port map (CLK => CLK,
@@ -36,7 +36,11 @@ architecture testbench of ring_counter_tb is
   gen_clk : process (CLK)
   begin
       --assert false report "clock" severity note;
-      CLK <= not CLK after half_period;
+      if FIN = '0' then
+        CLK <= not CLK after half_period;
+      else
+	CLK <= '0';
+      end if;
   end process;
 
   process
@@ -53,7 +57,7 @@ architecture testbench of ring_counter_tb is
          ('0', '1',  "1101", "01"), --A->B
          ('0', '1',  "1011", "10"), --B->C
          ('0', '1',  "0111", "11"), --C->D
-         ('0', '1',  "1111", "00")  --D->A
+         ('0', '1',  "1110", "00")  --D->A
     );
     begin
       report "Starting Loop" severity note;
@@ -62,11 +66,13 @@ architecture testbench of ring_counter_tb is
         RST <= test_vectors(i).RST; 
         PB  <= test_vectors(i).PB;
         wait until rising_edge(CLK);
+	wait for 1 ns; --transition time
         assert O = test_vectors(i).O report "Failed O:" & str(test_vectors(i).O) & "->" & str(O); 
-        assert C = test_vectors(i).C report "Failed C:" & str(C);
+        assert C = test_vectors(i).C report "Failed C:" & str(test_vectors(i).C) & "->" & str(C);
       end loop;
       report "end of test" severity note;
       FIN <= '1';
+      report "stopping clock" severity note;
       wait;
   end process;
 

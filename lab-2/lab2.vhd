@@ -32,7 +32,6 @@ signal X,Y,Z,EN: STD_LOGIC; --Signals for the digital one-shot and enable
 
 --Create any signals you need here (for example, you will need a signal to hold the next state logic for your flipflops)
 
-signal jumper : STD_LOGIC := '0'; --Used to jump start the counter
 signal Q : STD_LOGIC_VECTOR(3 downto 0) := "0001"; --Internal signals for Q flip-flop outputs
 
 begin
@@ -104,40 +103,38 @@ Oout <= O;
 --Begin ring-counter logic
 FF_0 :  process (CLK)
   begin
-    if rising_edge(CLK) then        --I do not think I need to check clock
-      Q(0) <= jumper and not RST and PB; --because rising_edge only returns
-    end if;                                  --true on the 0->1 transition
+    if rising_edge(CLK) then
+      Q(0) <= RST OR (Q(0) and not PB) OR (Q(3) AND PB);
+    end if;
   end process;
 
 FF_1 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(1) <= Q(0) and not RST and PB;
+      Q(1) <= (Q(0) AND PB) OR (Q(1) AND not PB);
     end if;
   end process;
 
 FF_2 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(2) <= Q(1) and not RST and PB;
+      Q(2) <= (Q(1) AND PB) OR (Q(2) AND not PB);
     end if;
   end process;
 
 FF_3 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(3) <= Q(2) and not RST and PB;
+      Q(3) <= (Q(2) AND PB) OR (Q(3) AND not PB);
     end if;
   end process;
 
-jumper <= not Q(3) and not Q(2) and not Q(1); --This could probably be generalized
-                                  --like mention in lecture the other day
 --End ring-counter logic
 
 --Begin output logic
 O <= not Q;
-C(0) <= Q(2) and not Q(0);
-C(1) <= Q(2) and not Q(1);
+C(0) <= Q(1) or Q(3);
+C(1) <= Q(2) or Q(3);
 --End output logic
 
 end Behavioral;
