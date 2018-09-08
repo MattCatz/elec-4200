@@ -4,10 +4,10 @@ use ieee.std_logic_1164.all;
 library work;
 use work.txt_util.all;
 
-entity ring_counter_tb is
+entity Moore_FSM_Equations_FD_tb is
 end entity;
 
-architecture testbench of ring_counter_tb is 
+architecture testbench of Moore_FSM_Equations_FD_tb is 
 
   component Moore_FSM_Equations_FD is
     port (

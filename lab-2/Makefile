@@ -2,10 +2,10 @@
 .PHONY: test
 
 test : work-obj93.cf
-> ghdl -m ring_counter_tb
-> ghdl -r ring_counter_tb 
+> ghdl -m Moore_FSM_Equations_FD_tb
+> ghdl -r Moore_FSM_Equations_FD_tb 
 
-work-obj93.cf : lab2.vhd ring_counter_tb.vhd
-> ghdl -i lab2.vhd
-> ghdl -i ring_counter_tb.vhd
+work-obj93.cf : Moore_FSM_Equations_FD.vhd Moore_FSM_Equations_FD_tb.vhd
+> ghdl -i Moore_FSM_Equations_FD.vhd
+> ghdl -i Moore_FSM_Equations_FD_tb.vhd
 > ghdl -i textutils.vhd 
