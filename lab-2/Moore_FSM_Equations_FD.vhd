@@ -111,21 +111,21 @@ FF_0 :  process (CLK)
 FF_1 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(1) <= (Q(0) AND PB) OR (Q(1) AND not PB);
+      Q(1) <= not RST AND ((Q(0) AND PB) OR (Q(1) AND not PB ));
     end if;
   end process;
 
 FF_2 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(2) <= (Q(1) AND PB) OR (Q(2) AND not PB);
+      Q(2) <= not RST AND ((Q(1) AND PB) OR (Q(2) AND not PB));
     end if;
   end process;
 
 FF_3 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(3) <= (Q(2) AND PB) OR (Q(3) AND not PB);
+      Q(3) <= not RST AND ((Q(2) AND PB) OR (Q(3) AND not PB));
     end if;
   end process;
 

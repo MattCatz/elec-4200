@@ -57,7 +57,11 @@ architecture testbench of Moore_FSM_Equations_FD_tb is
          ('0', '1',  "1101", "01"), --A->B
          ('0', '1',  "1011", "10"), --B->C
          ('0', '1',  "0111", "11"), --C->D
-         ('0', '1',  "1110", "00")  --D->A
+         ('0', '1',  "1110", "00"), --D->A
+         ('0', '1',  "1101", "01"), --A->B
+         ('0', '0',  "1101", "01"), --B->B
+         ('0', '1',  "1011", "10"), --B->C
+         ('1', '1',  "1110", "00")  --C->A
     );
     begin
       report "Starting Loop" severity note;
@@ -72,7 +76,6 @@ architecture testbench of Moore_FSM_Equations_FD_tb is
       end loop;
       report "end of test" severity note;
       FIN <= '1';
-      report "stopping clock" severity note;
       wait;
   end process;
 
