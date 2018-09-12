@@ -104,28 +104,28 @@ Oout <= O;
 FF_0 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(0) <= RST OR (Q(0) and not PB) OR (Q(3) AND PB);
+      Q(0) <= RST OR (Q(0) and not EN) OR (Q(3) AND EN);
     end if;
   end process;
 
 FF_1 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(1) <= not RST AND ((Q(0) AND PB) OR (Q(1) AND not PB ));
+      Q(1) <= not RST AND ((Q(0) AND EN) OR (Q(1) AND not EN ));
     end if;
   end process;
 
 FF_2 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(2) <= not RST AND ((Q(1) AND PB) OR (Q(2) AND not PB));
+      Q(2) <= not RST AND ((Q(1) AND EN) OR (Q(2) AND not EN));
     end if;
   end process;
 
 FF_3 :  process (CLK)
   begin
     if rising_edge(CLK) then
-      Q(3) <= not RST AND ((Q(2) AND PB) OR (Q(3) AND not PB));
+      Q(3) <= not RST AND ((Q(2) AND EN) OR (Q(3) AND not EN));
     end if;
   end process;
 
