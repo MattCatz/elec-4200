@@ -7,7 +7,7 @@ use work.txt_util.all;
 entity Moore_FSM_Equations_FD_tb is
 end entity;
 
-architecture testbench of Moore_FSM_Equations_FD_tb is 
+architecture testbench of Moore_FSM_Equations_FD_tb is
 
   component Moore_FSM_Equations_FD is
     port (
@@ -35,7 +35,6 @@ architecture testbench of Moore_FSM_Equations_FD_tb is
                                                    Oout   => O);
   gen_clk : process (CLK)
   begin
-      --assert false report "clock" severity note;
       if FIN = '0' then
         CLK <= not CLK after half_period;
       else
@@ -58,23 +57,43 @@ architecture testbench of Moore_FSM_Equations_FD_tb is
          ('0', '1',  "1011", "10"), --B->C
          ('0', '1',  "0111", "11"), --C->D
          ('0', '1',  "1110", "00"), --D->A
+         ('1', '1',  "1110", "00"), --A->A
          ('0', '1',  "1101", "01"), --A->B
-         ('0', '0',  "1101", "01"), --B->B
+         ('1', '1',  "1110", "00"), --B->A
+         ('0', '1',  "1101", "01"), --A->B
          ('0', '1',  "1011", "10"), --B->C
-         ('1', '1',  "1110", "00")  --C->A
+         ('1', '1',  "1110", "00"), --C->A
+         ('0', '1',  "1101", "01"), --A->B
+         ('0', '1',  "1011", "10"), --B->C
+         ('0', '1',  "0111", "11"), --C->D
+         ('1', '1',  "1110", "00"), --D->A
+         ('1', '0',  "1110", "00"), --A->A
+         ('0', '1',  "1101", "01"), --A->B
+         ('1', '0',  "1110", "00"), --B->A
+         ('0', '1',  "1101", "01"), --A->B
+         ('0', '1',  "1011", "10"), --B->C
+         ('1', '0',  "1110", "00"), --C->A
+         ('0', '1',  "1101", "01"), --A->B
+         ('0', '1',  "1011", "10"), --B->C
+         ('0', '1',  "0111", "11"), --C->D
+         ('1', '0',  "1110", "00")  --D->A
     );
     begin
-      report "Starting Loop" severity note;
+      report "Starting tests" severity note;
       for i in test_vectors'range loop
-	report "Vector: " & str(i);
-        RST <= test_vectors(i).RST; 
+        report "Vector: " & str(i);
+        RST <= test_vectors(i).RST;
         PB  <= test_vectors(i).PB;
         wait until rising_edge(CLK);
-	wait for 1 ns; --transition time
-        assert O = test_vectors(i).O report "Failed O:" & str(test_vectors(i).O) & "->" & str(O); 
+        wait for 1 ns;
+        RST <= '0';
+        PB <= '0';
+        wait until rising_edge(CLK); -- check that we can stay here
+        wait for 1 ns; -- transition time
+        assert O = test_vectors(i).O report "Failed O:" & str(test_vectors(i).O) & "->" & str(O);
         assert C = test_vectors(i).C report "Failed C:" & str(test_vectors(i).C) & "->" & str(C);
       end loop;
-      report "end of test" severity note;
+      report "End of tests" severity note;
       FIN <= '1';
       wait;
   end process;

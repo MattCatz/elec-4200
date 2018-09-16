@@ -77,7 +77,9 @@ ONESHOTFF3 : process (CLK)
   end process;
 
 --Create enable signal with the output of the oneshot
-EN <= Y and not Z;
+-- Disabled for testing
+-- EN <= Y and not Z;
+EN <= PB;
 
 ---------------------End digital one-shot code---------------------
 
