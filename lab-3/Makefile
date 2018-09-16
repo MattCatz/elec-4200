@@ -1,11 +1,21 @@
 .RECIPEPREFIX = >
-.PHONY: test
+.PHONY: test test_octal test_hex clean
+.TARGET: test
 
-test : work-obj93.cf
-> ghdl -m OctalDecoder_tb
+files = OctalDecoder.vhd OctalDecoder_tb.vhd HexDecoder.vhd HexDecoder_tb.vhd textutils.vhd 
+
+test : test_octal test_hex
+
+test_octal: work-obj93.cf
+> ghdl -m OctalDecoder_tb                                                                                                                                                 
 > ghdl -r OctalDecoder_tb
 
-work-obj93.cf :
-> ghdl -i OctalDecoder.vhd
-> ghdl -i OctalDecoder_tb.vhd
-> ghdl -i textutils.vhd
+test_hex: work-obj93.cf 
+> ghdl -m OctalDecoder_tb                                                                                                                                                 
+> ghdl -r OctalDecoder_tb
+
+work-obj93.cf: $(files)
+> ghdl -i $(files)
+
+clean:
+> rm work-obj93.cf
