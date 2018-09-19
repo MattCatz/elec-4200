@@ -50,7 +50,7 @@ case D is
   when "1100" =>
     Segments <=   "0110001"; -- C
   when "1101" =>
-    Segments <=   "1011101"; -- D
+    Segments <=   "1000010"; -- D
   when "1110" =>
     Segments <=   "0110000"; -- E
   when "1111" =>
