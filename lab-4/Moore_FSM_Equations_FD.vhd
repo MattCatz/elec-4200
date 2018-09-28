@@ -80,40 +80,28 @@ Oout <= O;
 process (CLK) is
 begin
   if rising_edge(CLK) then
-    case C is
-      when "00" => -- A
-        if RST = '1' then -- Goto A
-          C <= "00";
-          O <= "1110";
-        elsif EN = '1' then -- Goto B
-          C <= "01";
-          O <= "1101";
-        end if;
-      when "01" => -- B
-        if RST = '1' then -- Goto A
-          C <= "00";
-          O <= "1110";
-        elsif EN = '1' then -- Goto C
-          C <= "10";
-          O <= "1011";
-        end if;
-      when "10" => -- C
-        if RST = '1' then -- Goto A
-          C <= "00";
-          O <= "1110";
-        elsif EN = '1' then -- Goto D
-          C <= "11";
-          O <= "0111";
-        end if;
-      when "11" => -- D
-        if (RST='1') OR (EN='1') then -- Goto A
-          C <= "00";
-          O <= "1110";
-        end if;
-      when others =>
-          C <= "00";
-          O <= "1110";
-    end case;
+    if RST = '1' then -- GOTO A
+        C <= "00";
+        O <= "1110";
+     elsif EN = '1' then
+        case C is
+          when "00" => -- A
+            C <= "01";
+            O <= "1101";
+          when "01" => -- B
+            C <= "10";
+            O <= "1011";
+          when "10" => -- C
+            C <= "11";
+            O <= "0111";
+          when others =>
+            C <= "00";
+            O <= "1110";                    
+        end case;
+      else
+        C <= C;
+        O <= O;
+     end if;
   end if;
 end process;
 end Behavioral;
