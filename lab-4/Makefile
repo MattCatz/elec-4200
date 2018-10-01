@@ -1,14 +1,11 @@
 .RECIPEPREFIX = >
 .PHONY: test
 
-files = Moore_FSM_Equations_FD.vhd Moore_FSM_Equations_FD_tb.vhd textutils.vhd
+files = Moore_FSM_Equations_FD.vhd Moore_FSM_Equations_FD_tb.vhd ../textutils.vhd
 
-test : work-obj93.cf
-> ghdl -m Moore_FSM_Equations_FD_tb
-> ghdl -r Moore_FSM_Equations_FD_tb 
+testbenches = Moore_FSM_Equations_FD_tb
 
-work-obj93.cf : $(files)
-> ghdl -i $(files)
+all: test
 
-clean:
-> rm work-obj93.cf 
+
+include ../Default.mk
