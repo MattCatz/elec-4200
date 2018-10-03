@@ -29,7 +29,7 @@ architecture lab_5 of Shift_Register is
 					when "00" =>
 						Q <= Q;
 					when "01" =>
-						Q <= STD_LOGIC_VECTOR(shift_left(unsigned(Q), 1));
+						Q <= D(N-1) & Q(N-1 downto 1);
 					when "10" =>
 						Q <= STD_LOGIC_VECTOR(unsigned(Q) + 1);
 					when "11" =>
