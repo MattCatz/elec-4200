@@ -6,8 +6,8 @@ library WORK;
 use WORK.all;
 
 entity Lab_6_TOP is
-  Generic (M : integer := 8;
-           N : integer := 8);
+  Generic (M : integer := 2;
+           N : integer := 4);
   Port (PB : in std_logic;
         r_addr: in std_logic_vector(M-1 downto 0);
         w_addr : in std_logic_vector(M-1 downto 0);

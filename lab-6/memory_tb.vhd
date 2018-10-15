@@ -9,14 +9,14 @@ entity Memory_tb is
 end entity Memory_tb;
 
 architecture testbench of Memory_TB is
-	
+
 	constant addr_len : Natural := 8;
 	constant register_size : Natural := 8;
-	
+
 	signal ENABLE, WRITE_ENABLE: STD_LOGIC := '0';
 	signal R_ADDR, W_ADDR: STD_LOGIC_VECTOR(ADDR_LEN-1 downto 0);
 	signal D_IN, D_OUT: STD_LOGIC_VECTOR(register_size-1 downto 0);
-	
+
 
 	begin
   	memory: entity work.memory generic map (addr_len, register_size)
@@ -25,28 +25,27 @@ architecture testbench of Memory_TB is
   process
     procedure STAGE_ONE is
     begin
-      for i in 0 to addr_len loop
-        report str(i);
+      R_ADDR <= (others => '0');
+      for i in 0 to (2**ADDR_LEN)-1 loop
         D_IN <= STD_LOGIC_VECTOR(to_unsigned(i, register_size));
         W_ADDR <= STD_LOGIC_VECTOR(to_unsigned(i, addr_len));
-        -- report str(i);
         wait for 1 ns;
         WRITE_ENABLE <= '1';
         wait for 1 ns;
         WRITE_ENABLE <= '0';
       end loop;
     end procedure STAGE_ONE;
-  
+
     procedure STAGE_TWO is
     begin
-      for i in 0 to ADDR_LEN loop
-        
+      for i in 0 to (2**ADDR_LEN)-1 loop
+
         R_ADDR <= STD_LOGIC_VECTOR(to_unsigned(i, ADDR_LEN));
         wait for 1 ns;
         assert i = to_integer(unsigned(D_OUT))
-          report "Failure to read adress" severity failure;
-        
-        D_IN <= STD_LOGIC_VECTOR(to_unsigned(ADDR_LEN - i, register_size));
+          report "Failure to read adress in stage two" severity failure;
+
+        D_IN <= not STD_LOGIC_VECTOR(to_unsigned(i, register_size));
         W_ADDR <= STD_LOGIC_VECTOR(to_unsigned(i, ADDR_LEN));
         wait for 1 ns;
         WRITE_ENABLE <= '1';
@@ -54,16 +53,16 @@ architecture testbench of Memory_TB is
         WRITE_ENABLE <= '0';
       end loop;
     end procedure STAGE_TWO;
-  
+
     procedure STAGE_THREE is
     begin
-      for i in 0 to ADDR_LEN loop
-        R_ADDR <= STD_LOGIC_VECTOR(to_unsigned(ADDR_LEN - i, ADDR_LEN));
+      for i in 0 to (2**ADDR_LEN)-1 loop
+        R_ADDR <= not STD_LOGIC_VECTOR(to_unsigned(i, ADDR_LEN));
         wait for 1 ns;
-        assert (ADDR_LEN - i) = to_integer(unsigned(D_OUT))
-          report "Failure to read adress" severity failure;
-        
-        W_ADDR <= STD_LOGIC_VECTOR(to_unsigned(ADDR_LEN - i, ADDR_LEN));
+        assert i = to_integer(unsigned(D_OUT))
+          report "Failure to read adress in stage three" severity failure;
+
+        W_ADDR <= not STD_LOGIC_VECTOR(to_unsigned(i, ADDR_LEN));
         D_IN <= STD_LOGIC_VECTOR(to_unsigned(i, register_size));
         wait for 1 ns;
         WRITE_ENABLE <= '1';
@@ -71,19 +70,19 @@ architecture testbench of Memory_TB is
         WRITE_ENABLE <= '0';
       end loop;
     end procedure STAGE_THREE;
-  
+
     procedure STAGE_FOUR is
     begin
-      for i in 0 to ADDR_LEN loop
+      for i in 0 to (2**ADDR_LEN)-1 loop
         R_ADDR <= STD_LOGIC_VECTOR(to_unsigned(i, ADDR_LEN));
         wait for 1 ns;
-        assert (ADDR_LEN - i) = to_integer(unsigned(D_OUT))
-          report "Failure to read adress" severity failure;
+        assert i = to_integer(unsigned(not D_OUT))
+          report "Failure to read adress in stage four" severity failure;
       end loop;
     end procedure STAGE_FOUR;
-  
+
   begin
-  
+
   STAGE_ONE;
   wait for 5 ns;
   STAGE_TWO;
@@ -92,7 +91,7 @@ architecture testbench of Memory_TB is
   wait for 5 ns;
   STAGE_FOUR;
   wait;
-  
+
   end process;
- 
+
 end architecture testbench;
