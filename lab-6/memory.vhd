@@ -18,6 +18,7 @@ architecture lab_6 of Memory is
 
   begin
   
+  -- TODO figure out why this is broken
   do <= RAM(to_integer(unsigned(r_addr)));
   
   write_data: process (we)

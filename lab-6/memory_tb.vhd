@@ -10,8 +10,8 @@ end entity Memory_tb;
 
 architecture testbench of Memory_TB is
 	
-	constant addr_len : Natural := 1;
-	constant register_size : Natural := 1;
+	constant addr_len : Natural := 8;
+	constant register_size : Natural := 8;
 	
 	signal ENABLE, WRITE_ENABLE: STD_LOGIC := '0';
 	signal R_ADDR, W_ADDR: STD_LOGIC_VECTOR(ADDR_LEN-1 downto 0);
@@ -26,8 +26,10 @@ architecture testbench of Memory_TB is
     procedure STAGE_ONE is
     begin
       for i in 0 to addr_len loop
+        report str(i);
         D_IN <= STD_LOGIC_VECTOR(to_unsigned(i, register_size));
         W_ADDR <= STD_LOGIC_VECTOR(to_unsigned(i, addr_len));
+        -- report str(i);
         wait for 1 ns;
         WRITE_ENABLE <= '1';
         wait for 1 ns;
@@ -38,10 +40,9 @@ architecture testbench of Memory_TB is
     procedure STAGE_TWO is
     begin
       for i in 0 to ADDR_LEN loop
+        
         R_ADDR <= STD_LOGIC_VECTOR(to_unsigned(i, ADDR_LEN));
         wait for 1 ns;
-        report str(D_OUT);
-        report std(R_ADDR);
         assert i = to_integer(unsigned(D_OUT))
           report "Failure to read adress" severity failure;
         
