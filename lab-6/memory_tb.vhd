@@ -10,8 +10,8 @@ end entity Memory_tb;
 
 architecture testbench of Memory_TB is
 
-	constant addr_len : Natural := 2;
-	constant register_size : Natural := 4;
+	constant addr_len : Natural := 3;
+	constant register_size : Natural := 3;
 
 	signal ENABLE, WRITE_ENABLE: STD_LOGIC := '0';
 	signal R_ADDR, W_ADDR: STD_LOGIC_VECTOR(ADDR_LEN-1 downto 0);
@@ -59,8 +59,8 @@ architecture testbench of Memory_TB is
       for i in 0 to (2**ADDR_LEN)-1 loop
         R_ADDR <= not STD_LOGIC_VECTOR(to_unsigned(i, ADDR_LEN));
         wait for 1 ns;
-        assert register_size -1 - i = to_integer(unsigned(not D_OUT))
-          report "Failure to read adress in stage three, expected:" & str(register_size - 1 - i) & " got " & str(D_OUT) severity failure;
+        assert 2**ADDR_LEN -1 - i = to_integer(unsigned(not D_OUT))
+          report "Failure to read adress in stage three, expected:" & str(2**ADDR_LEN -1 - i) & " got " & str(not D_OUT) severity failure;
 
         W_ADDR <= not STD_LOGIC_VECTOR(to_unsigned(i, ADDR_LEN));
         D_IN <= STD_LOGIC_VECTOR(to_unsigned(i, register_size));
@@ -76,8 +76,8 @@ architecture testbench of Memory_TB is
       for i in 0 to (2**ADDR_LEN)-1 loop
         R_ADDR <= STD_LOGIC_VECTOR(to_unsigned(i, ADDR_LEN));
         wait for 1 ns;
-        assert register_size -1 - i = to_integer(unsigned(D_OUT))
-          report "Failure to read adress in stage four, expected:" & str(register_size - 1 - i) & " got " & str(D_OUT) severity failure;
+        assert 2**ADDR_LEN -1 - i = to_integer(unsigned(D_OUT))
+          report "Failure to read adress in stage four, expected:" & str(ADDR_LEN - 1 - i) & " got " & str(D_OUT) severity failure;
       end loop;
     end procedure STAGE_FOUR;
 
