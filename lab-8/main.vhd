@@ -5,8 +5,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 entity TutorialTopLevel is
-    Port (       switches : in std_logic_vector(7 downto 0);
-                 LEDS : out std_logic_vector(7 downto 0);
+    Port (       switches : in std_logic_vector(3 downto 0);
+                 Segments: out std_logic_vector(6 downto 0);
+                 AN: out std_logic_vector(7 downto 0);
                  clk : in std_logic);
 end TutorialTopLevel;
 
@@ -39,12 +40,12 @@ architecture Behavioral of TutorialTopLevel is
 --
 -- The name of this component should match the name of your PSM file.
 --
-component Tutorial                            
-    Port (      address : in std_logic_vector(11 downto 0);
-            instruction : out std_logic_vector(17 downto 0);
-                 enable : in std_logic;
-                    clk : in std_logic);
-  end component;
+  component lab8 is
+      Port (      address : in std_logic_vector(11 downto 0);
+              instruction : out std_logic_vector(17 downto 0);
+                   enable : in std_logic;
+                      clk : in std_logic);
+      end component lab8;
 
 signal         address : std_logic_vector(11 downto 0);
 signal     instruction : std_logic_vector(17 downto 0);
@@ -59,6 +60,8 @@ signal       interrupt : std_logic;
 signal   interrupt_ack : std_logic;
 signal    kcpsm6_sleep : std_logic;
 signal    kcpsm6_reset : std_logic;
+
+signal               Q : std_logic_vector(6 downto 0);
 
 begin
   -- Instantiating the PicoBlaze core
@@ -91,14 +94,25 @@ begin
   interrupt <= interrupt_ack;
 
   -- Instantiating the program ROM
-  program_rom: Tutorial                    --Name to match your PSM file
+  program_rom: lab8                    --Name to match your PSM file
     port map(      address => address,      
                instruction => instruction,
                     enable => bram_enable,
                        clk => clk);
+                       
+  output_latch: process(clk)
+  begin
+    if rising_edge(clk) then
+        if write_strobe='1' then
+            Q <= out_port(6 downto 0);
+        end if;
+     end if;
+   end process output_latch;
 
    -- Connect I/O of PicoBlaze
-  in_port <= switches;
-  LEDS <= out_port;
+  in_port(7 downto 4) <= "0000";
+  in_port(3 downto 0) <= switches(3 downto 0);
+  Segments <= Q;
+  AN <= "11111110";
 
  end Behavioral;
