@@ -1,0 +1,25 @@
+	CONSTANT switches, 00;
+	CONSTANT pb, 01;
+	CONSTANT LEDs_1, 02;
+	CONSTANT LEDs_2, 04;
+
+	NAMEREG s0, pb_value;
+	NAMEREG s1, switch_value;
+	NAMEREG s3, LED_output;
+
+right_loop:
+	INPUT pb_value, pb;
+	TEST  pb_value, 1;
+	JUMP Z, right_loop;
+	OUTPUT 0, LEDs_2;
+	FETCH switch_value, switches;
+	OUTPUT LED_output, LEDs_1;
+left_loop:
+	INPUT pb_value, pb;
+	TEST  pb_value, 1;
+	JUMP Z, left_loop;
+	OUTPUT 0, LEDs_1;
+	FETCH switch_value, switches;
+	OUTPUT LED_output, LEDs_2;
+	JUMP right_loop;
+	
