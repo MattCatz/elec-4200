@@ -24,8 +24,6 @@ architecture behavior of input_port is
         elsif (sel='1') then
             Q(0) <= pb;
             Q(3 downto 1) <= (others => '0');
-        else
-            Q <= Q;
         end if;
     end if;
     end process;
