@@ -7,19 +7,26 @@
 	NAMEREG s1, switch_value;
 	NAMEREG s3, LED_output;
 
-right_loop:
+r_start:
 	INPUT pb_value, pb;
-	TEST  pb_value, 1;
-	JUMP Z, right_loop;
-	OUTPUT 0, LEDs_2;
-	FETCH switch_value, switches;
-	OUTPUT LED_output, LEDs_1;
-left_loop:
+	TEST  pb_value, 01;
+	JUMP Z, r_start;
+	INPUT switch_value, switches;
+	OUTPUT switch_value, LEDs_1;
+r_end:
 	INPUT pb_value, pb;
-	TEST  pb_value, 1;
-	JUMP Z, left_loop;
-	OUTPUT 0, LEDs_1;
-	FETCH switch_value, switches;
-	OUTPUT LED_output, LEDs_2;
-	JUMP right_loop;
+	TEST pb_value, 01;
+	JUMP NZ, r_end; 
+	
+l_start:
+	INPUT pb_value, pb;
+	TEST  pb_value, 01;
+	JUMP Z, l_start;
+	INPUT switch_value, switches;
+	OUTPUT switch_value, LEDs_2;
+l_end:
+	INPUT pb_value, pb;
+	TEST pb_value, 01;
+	JUMP NZ, l_end; 
+	JUMP r_start;
 	
