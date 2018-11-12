@@ -21,7 +21,7 @@ begin
         if rising_edge(clk) then
             if SCK = '1' then
                 current_state <= next_state;
-                Q <= MOSI & Q(4 downto 0);
+                Q <= MOSI & Q(5 downto 1);
             end if;
         end if;
     end process SYNC;
@@ -33,18 +33,14 @@ begin
                       S4 when S3,
                       S5 when S4,
                       S0 when others;
+                      
+    with current_state select
+        Q_RDY <= Q when S0,
+                 Q_RDY when others;
                  
-    process (Q)
-    begin
-        case current_state is
-            when S5 => 
-                Q_RDY <= Q;
-                RDY_i <= '1';
-            when others =>
-                Q_RDY <= Q_RDY;
-                RDY_i <= '0';
-            end case;
-    end process; 
+    with current_state select
+        RDY_i <= '1' when S5,
+                 '0' when others;
    
    OUTPUT <= Q_RDY;
    RDY <= RDY_L;
