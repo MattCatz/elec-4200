@@ -10,6 +10,8 @@ end entity spi_receiver;
 architecture lab_nine of spi_receiver is
 	type state_type is (S0,S1,S2,S3,S4,S5); 
 	signal current_state, next_state : state_type;
+	
+	shared variable count : Natural := 0;
 
     signal RDY_i,RDY_L : std_logic := '0';
 	signal Q,Q_RDY: STD_LOGIC_VECTOR(5 downto 0) := (others => '0');
@@ -20,27 +22,20 @@ begin
     begin
         if rising_edge(clk) then
             if SCK = '1' then
-                current_state <= next_state;
-                Q <= MOSI & Q(5 downto 1);
+               count := count + 1;
+                if count = 6 then
+                    count := 0;
+                    Q_RDY <= Q(4 downto 0) & MOSI;
+                    RDY_i <= '1';
+                else
+                    Q_RDY <= Q_RDY;
+                end if;
+                Q <= Q(4 downto 0) & MOSI;
+            else
+                RDY_i <= '0';
             end if;
         end if;
     end process SYNC;
-    
-    with current_state select
-        next_state <= S1 when S0,
-                      S2 when S1,
-                      S3 when S2,
-                      S4 when S3,
-                      S5 when S4,
-                      S0 when others;
-                      
-    with current_state select
-        Q_RDY <= Q when S0,
-                 Q_RDY when others;
-                 
-    with current_state select
-        RDY_i <= '1' when S5,
-                 '0' when others;
    
    OUTPUT <= Q_RDY;
    RDY <= RDY_L;
