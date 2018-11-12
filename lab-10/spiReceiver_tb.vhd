@@ -52,6 +52,7 @@ architecture testbench of Lab_10_TOP_TB is
 			('0', '0', '1', '0', '0', 11), -- Send zero
 			('0', '0', '1', '0', '0', 11), -- Send zero
 			('0', '0', '1', '0', '1',  0), -- Send zero and expect the results to be ready
+			('0', '0', '0', '1', '0',  0), -- Acknowledge the results
 			('0', '1', '0', '0', '0',  0), -- Signal but dont send
 			('0', '1', '0', '0', '0',  0), -- Signal but dont send
 			('0', '1', '0', '0', '0',  0), -- Signal but dont send
@@ -64,11 +65,10 @@ architecture testbench of Lab_10_TOP_TB is
 			('1', '1', '1', '0', '0',  0), -- Send one
 			('1', '1', '1', '0', '0',  0), -- Send one
 			('1', '1', '1', '0', '0',  0), -- Send one
-      ('0', '1', '1', '1', '0', 63)); -- Send one and Acknowledge early
+            ('0', '1', '1', '1', '0', 63)); -- Send one and Acknowledge early
 		begin
 			report "Starting Tests" severity note;
 			for i in test_vectors'range loop
-			  RST <= test_vectors(i).RST;
 				MOSI <= test_vectors(i).MOSI;
 				SCK <= test_vectors(i).SCK;
 				ACK <= test_vectors(i).ACK;
