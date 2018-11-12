@@ -1,0 +1,37 @@
+	CONSTANT spi, 00;
+	CONSTANT segment_enable_port, 01;
+	CONSTANT delay_length;
+
+	NAMEREG s1, delay_count;
+	NAMEREG s2, segment_value;
+	NAMEREG s3, segment_id;
+	NAMEREG s5, segment_enable;
+
+setup:
+
+
+main:
+
+	ADD segment_enable, 1;
+	AND segment_enable, 00000011'b;
+delay:
+	TEST delay;
+	JUMP NZ, delay;
+	STORE delay_count, delay_value;
+	JUMP main;
+	
+spi_rdy:
+	INPUT value, spi;
+	LOAD segment_id, segment_value;
+	AND value, 00001111'b;
+	SR0 segment_id;
+	SR0 segment_id;
+	SR0 segment_id;
+	SR0 segment_id;
+	AND segment_id, 00000011'b;
+	OUTPUT segment_value, (segment_id);
+	RETURNI ENABLE;
+
+interrupt_vector: 
+	ADDRESS 3FF;
+	JUMP spi_rdy;
