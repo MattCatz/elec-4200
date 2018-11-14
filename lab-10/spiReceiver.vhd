@@ -2,13 +2,13 @@ Library IEEE;
 use IEEE.std_logic_1164.all;
 
 entity spi_receiver is
-port(MOSI,SCK,ACK,CLK,RST: in std_logic;
+port(MOSI,SCK,ACK,CLK: in std_logic;
      RDY: out std_logic;
      OUTPUT: out std_logic_vector(5 downto 0));
 end entity spi_receiver;
 
 architecture lab_nine of spi_receiver is
-	type state_type is (S0,S1,S2,S3,S4,S5); 
+	type state_type is (ready,not_ready); 
 	signal current_state, next_state : state_type;
 	
 	shared variable count : Natural := 0;
@@ -18,7 +18,7 @@ architecture lab_nine of spi_receiver is
 
 begin
 				
-	SYNC: process(CLK,SCK,RST)
+	SYNC: process(CLK,SCK)
     begin
         if rising_edge(clk) then
             if SCK = '1' then
