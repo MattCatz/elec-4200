@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all;
 
 entity lab_11_heiarchy is
   Port (PB : in std_logic;
-        INPUT_DATA : in std_logic_vector(5 downto 0);
+        SWITCH : in std_logic;
         SEGMENTS : out std_logic_vector(6 downto 0);
         DISPLAY_ENABLE: out std_logic_vector(3 downto 0);
         CLK: in std_logic);
@@ -25,11 +25,11 @@ signal    kcpsm6_sleep : std_logic;
 signal    kcpsm6_reset : std_logic;
 
 signal PBdb : std_logic := '0';
-signal SCK : std_logic := '0';
 
 signal MOSI,SCK,ACK,RDY: std_logic := '0';
     
-signal OUTPUT_DATA: std_logic_vector(5 downto 0);
+signal segments_i: std_logic_vector(7 downto 0);
+signal enables_i: std_logic_vector(7 downto 0);
 
 begin
   -- Instantiating the PicoBlaze core
@@ -57,7 +57,7 @@ begin
   kcpsm6_sleep <= '0';
 
   -- Instantiating the program ROM
-  program_rom: entity WORK.lab9
+  program_rom: entity WORK.lab11
     port map(      address => address,      
                instruction => instruction,
                     enable => bram_enable,
@@ -67,16 +67,12 @@ begin
    
    DB: entity WORK.Debounce port map(CLK=>CLK, PB=>PB, PBdb=>PBdb);
    One_Shot: entity  WORK.One_Shot_Timer port map(CLK=>CLK, PB=>PBdb, EN=>SCK);
-   reciver: entity WORK.spi_receiver port map(MOSI=>MOSI,SCK=>SCK,ACK=>interrupt_ack,CLK=>CLK,RDY=>interrupt,OUTPUT=>in_port,RST=>'0');
-   
-   
-   reg_segments: entity WORK.output_port generic map(11) port map(clk=>clk, output=>port_2_output, input => in_port(3 downto 0), enable => port_id(1), strobe => write_strobe);
-   display: entity WORK.HexDecoder port map (D=>OUTPUT_DATA, segments=>segments);
+   reciver: entity WORK.spi_receiver port map(MOSI=>MOSI,SCK=>SCK,ACK=>interrupt_ack,CLK=>CLK,RDY=>interrupt,OUTPUT=>in_port(5 downto 0));
+    
+   reg_segments: entity WORK.output_port generic map(8) port map(clk=>clk, output=>segments_i, input => out_port, enable => port_id(1), strobe => write_strobe);
+   reg_enables: entity WORK.output_port generic map(8) port map(clk=>clk, output=>enables_i, input => out_port, enable => port_id(2), strobe => write_strobe);
 
-
-
-  in_port(7 downto 4) <= "0000";
-  LEDS(3 downto 0) <= port_2_output;
-  LEDS(7 downto 4) <= port_4_output;
-
+   SEGMENTS <= segments_i(6 downto 0);
+   DISPLAY_ENABLE <= enables_i(3 downto 0);
+   in_port(7 downto 6) <= (others => '0');
  end Behavioral;
