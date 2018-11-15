@@ -1,35 +1,35 @@
-	CONSTANT spi, 00;
-	CONSTANT segment_enable_port, 01;
-	CONSTANT delay_length;
+	CONSTANT spi_port, 00;
+	CONSTANT segments_port, 01;
+	CONSTANT enables_port, 02;
+	CONSTANT delay_length, 100'd;
 
 	NAMEREG s1, delay_count;
-	NAMEREG s2, segment_value;
-	NAMEREG s3, segment_id;
-	NAMEREG s5, segment_enable;
+	NAMEREG s2, segments;
+	NAMEREG s3, enable_id;
 
 setup:
-
+	LOAD delay_count, 00;
+	LOAD enable_id, 238'd;
+	LOAD segments, 00100100'b;
 
 main:
-
-	ADD segment_enable, 1;
-	AND segment_enable, 00000011'b;
+	SLA enable_id;
+	OUTPUT segments, segments_port;
 delay:
-	TEST delay;
+	TEST delay_count,FF;
 	JUMP NZ, delay;
-	STORE delay_count, delay_value;
+	STORE delay_count, delay_length;
 	JUMP main;
 	
 spi_rdy:
-	INPUT value, spi;
-	LOAD segment_id, segment_value;
-	AND value, 00001111'b;
-	SR0 segment_id;
-	SR0 segment_id;
-	SR0 segment_id;
-	SR0 segment_id;
-	AND segment_id, 00000011'b;
-	OUTPUT segment_value, (segment_id);
+	INPUT segments, spi_port;
+	LOAD enable_id, segments;
+	AND segments, 00001111'b;
+	SR0 enable_id;
+	SR0 enable_id;
+	SR0 enable_id;
+	SR0 enable_id;
+	AND enable_id, 00000011'b; Do lookup table
 	RETURNI ENABLE;
 
 interrupt_vector: 
