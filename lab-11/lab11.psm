@@ -7,18 +7,21 @@
 	NAMEREG s2, segments;
 	NAMEREG s3, enable_id;
 
+	TABLE decoder, [3F,06,5B,4F,66,6D,7D,07,7F,6F];
+
 setup:
 	LOAD delay_count, 00;
 	LOAD enable_id, 238'd;
 	LOAD segments, 00100100'b;
 
 main:
-	SLA enable_id;
+	RL enable_id;
 	OUTPUT segments, segments_port;
+	OUTPUT enable_id, enables_port;
 delay:
-	TEST delay_count,FF;
-	JUMP NZ, delay;
-	STORE delay_count, delay_length;
+	SUB delay_count,01;
+	JUMP NC, delay;
+	LOAD delay_count, delay_length;
 	JUMP main;
 	
 spi_rdy:
