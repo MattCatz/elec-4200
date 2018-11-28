@@ -5,7 +5,7 @@ entity lab_11_heiarchy is
   Port (PB : in std_logic;
         SWITCH : in std_logic;
         SEGMENTS : out std_logic_vector(6 downto 0);
-        DISPLAY_ENABLE: out std_logic_vector(3 downto 0);
+        DISPLAY_ENABLE: out std_logic_vector(7 downto 0);
         CLK: in std_logic);
 end lab_11_heiarchy;
 
@@ -69,10 +69,10 @@ begin
    One_Shot: entity  WORK.One_Shot_Timer port map(CLK=>CLK, PB=>PBdb, EN=>SCK);
    reciver: entity WORK.spi_receiver port map(MOSI=>MOSI,SCK=>SCK,ACK=>interrupt_ack,CLK=>CLK,RDY=>interrupt,OUTPUT=>in_port(5 downto 0));
     
-   reg_segments: entity WORK.output_port generic map(8) port map(clk=>clk, output=>segments_i, input => out_port, enable => port_id(1), strobe => write_strobe);
-   reg_enables: entity WORK.output_port generic map(8) port map(clk=>clk, output=>enables_i, input => out_port, enable => port_id(2), strobe => write_strobe);
+   reg_segments: entity WORK.output_port generic map(8) port map(clk=>clk, output=>segments_i, input => out_port, enable => port_id(0), strobe => write_strobe);
+   reg_enables: entity WORK.output_port generic map(8) port map(clk=>clk, output=>enables_i, input => out_port, enable => port_id(1), strobe => write_strobe);
 
    SEGMENTS <= segments_i(6 downto 0);
-   DISPLAY_ENABLE <= enables_i(3 downto 0);
+   DISPLAY_ENABLE <= "1111" & enables_i(3 downto 0);
    in_port(7 downto 6) <= (others => '0');
  end Behavioral;
