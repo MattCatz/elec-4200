@@ -1,20 +1,31 @@
 	CONSTANT spi_port, 00;
 	CONSTANT segments_port, 01;
 	CONSTANT enables_port, 02;
-	CONSTANT delay_length, 100'd;
+	CONSTANT delay_length, FF;
 
+	NAMEREG s0, temp;
 	NAMEREG s1, delay_count;
 	NAMEREG s2, segments;
 	NAMEREG s3, enable_id;
 
-	TABLE decoder, [3F,06,5B,4F,66,6D,7D,07,7F,6F];
+	TABLE 7_segment_decode#, [01,4F,12,06,4C,24,20,0F,00,0C,08,60,31,42,30,38];
 
 setup:
 	LOAD delay_count, 00;
 	LOAD enable_id, 238'd;
-	LOAD segments, 00100100'b;
+	LOAD temp, 11;
 
 main:
+	RL temp;
+	LOAD sC, temp;
+	AND sC, 0F;
+
+	LOAD sB, sevenseg'upper;
+	LOAD sA, sevenseg'lower;
+	ADD	 sA, sC;
+	ADDCY sB, 00;
+	CALL@ (sB, sA);
+
 	RL enable_id;
 	OUTPUT segments, segments_port;
 	OUTPUT enable_id, enables_port;
@@ -23,6 +34,8 @@ delay:
 	JUMP NC, delay;
 	LOAD delay_count, delay_length;
 	JUMP main;
+	
+sevenseg: LOAD&RETURN segments, 7_segment_decode#
 	
 spi_rdy:
 	INPUT segments, spi_port;
