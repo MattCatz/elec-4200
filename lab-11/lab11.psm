@@ -2,50 +2,77 @@
 	CONSTANT segments_port, 01;
 	CONSTANT enables_port, 02;
 	CONSTANT delay_length, FF;
+	CONSTANT default_data, 04;
 
-	NAMEREG s0, temp;
+	CONSTANT data_bank_1, 00;
+	CONSTANT data_bank_2, 01;
+	CONSTANT data_bank_3, 02;
+	CONSTANT data_bank_4, 03;
+
+	NAMEREG s0, index;
 	NAMEREG s1, delay_count;
 	NAMEREG s2, segments;
 	NAMEREG s3, enable_id;
+	NAMEREG s4, new_data;
+	NAMEREG s5, data_id;
 
 	TABLE 7_segment_decode#, [01,4F,12,06,4C,24,20,0F,00,0C,08,60,31,42,30,38];
 
 setup:
+	;Explicitly load the data_bank
+	LOAD sE, default_data;
+	LOAD index, data_bank_1;
+	STORE sE, (index);
+	ADD index, 01;
+	STORE sE, (index);
+	ADD index, 01;
+	STORE sE, (index);
+	ADD index, 01;
+	STORE sE, (index);
+	ADD index, 01;
+	STORE sE, (index);
+
 	LOAD delay_count, 00;
-	LOAD enable_id, 238'd;
-	LOAD temp, 11;
+	LOAD enable_id, 11101110'b;
+	LOAD index, data_bank_1;
+
+	ENABLE INTERRUPT;
 
 main:
-	RL temp;
-	LOAD sC, temp;
-	AND sC, 0F;
+	FETCH segments, (index);
 
 	LOAD sB, sevenseg'upper;
 	LOAD sA, sevenseg'lower;
-	ADD	 sA, sC;
+	ADD	 sA, segments;
 	ADDCY sB, 00;
 	CALL@ (sB, sA);
 
-	RL enable_id;
 	OUTPUT segments, segments_port;
 	OUTPUT enable_id, enables_port;
+
 delay:
 	SUB delay_count,01;
 	JUMP NC, delay;
 	LOAD delay_count, delay_length;
+
+maintenance:
+	ADD index, 01;
+	AND index, 00000011'b;
+	RL enable_id;
 	JUMP main;
 	
-sevenseg: LOAD&RETURN segments, 7_segment_decode#
+sevenseg: LOAD&RETURN segments, 7_segment_decode#;
 	
 spi_rdy:
-	INPUT segments, spi_port;
-	LOAD enable_id, segments;
-	AND segments, 00001111'b;
-	SR0 enable_id;
-	SR0 enable_id;
-	SR0 enable_id;
-	SR0 enable_id;
-	AND enable_id, 00000011'b; Do lookup table
+	INPUT new_data, spi_port;
+	LOAD data_id, new_data;
+	AND new_data, 00001111'b;
+	SR0 data_id;
+	SR0 data_id;
+	SR0 data_id;
+	SR0 data_id;
+	AND data_id, 00000011'b;
+	STORE new_data, (data_id);
 	RETURNI ENABLE;
 
 interrupt_vector: 
