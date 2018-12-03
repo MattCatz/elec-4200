@@ -62,16 +62,14 @@ maintenance:
 	JUMP main;
 	
 sevenseg: LOAD&RETURN segments, 7_segment_decode#;
-	
+
 spi_rdy:
 	INPUT new_data, spi_port;
 	LOAD data_id, new_data;
-	AND new_data, 00001111'b;
-	SR0 data_id;
-	SR0 data_id;
-	SR0 data_id;
-	SR0 data_id;
-	AND data_id, 00000011'b;
+	AND new_data, 00000011'b;
+	SR0 new_data;
+	SR0 new_data;
+	AND data_id, 00001111'b;
 	STORE new_data, (data_id);
 	RETURNI ENABLE;
 
