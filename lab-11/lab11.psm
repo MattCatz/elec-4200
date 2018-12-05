@@ -14,6 +14,9 @@
 	NAMEREG s6, offset;
 	NAMEREG s7, window;
 	NAMEREG s8, window_delay;
+	NAMEREG s9, window_delay_2;
+	NAMEREG sA, table_lower;
+	NAMEREG sB, table_upper;
 
 	                         ; 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F  L  ~
 	TABLE 7_segment_decode#, [01,4F,12,06,4C,24,20,0F,00,0C,08,60,31,42,30,38,71,FF];
@@ -67,9 +70,11 @@ maintenance:
 	ADD offset, 01;
 	AND offset, 00000011'b;
 	ADD window_delay, 01;
+	ADDCY window_delay_2, 00;
 	JUMP NC, main;
 
-	LOAD window_delay, prescale;
+	LOAD window_delay, 00;
+	LOAD window_delay_2, prescale;
 	ADD window, 01;
 	AND window, 00001111'b;
 	JUMP main;
