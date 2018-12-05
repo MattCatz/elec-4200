@@ -18,9 +18,8 @@
 	                         ; 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F  L  ~
 	TABLE 7_segment_decode#, [01,4F,12,06,4C,24,20,0F,00,0C,08,60,31,42,30,38,71,FF];
 	                     ; #  #  #  #  ~  E  L  E  C  ~  4  2  0  0  ~ 
-	;TABLE default_data#, [04,04,04,04,10,0E,10,0E,0C,11,04,02,00,00,11,11];
-	 TABLE default_data#, [01,02,03,04,05,06,07,08,09,0A,0B,0C,0D,0E,0F,10];
-                            ;0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+	TABLE default_data#, [04,04,04,04,10,0E,10,0E,0C,11,04,02,00,00,11,11];
+	;TABLE default_data#, [01,02,03,04,05,06,07,08,09,0A,0B,0C,0D,0E,0F,10];
 start:
 	LOAD index, 00;
 setup:
@@ -44,7 +43,9 @@ setup:
 main:
 	LOAD index, window;
 	ADD index, offset;
+	TEST index, 00010000'b;
 	AND index, 00001111'b;
+	ADDCY index, 00;
 	FETCH segments, (index);
 
 	LOAD sB, sevenseg'upper;
