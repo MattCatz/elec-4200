@@ -1,13 +1,8 @@
 	CONSTANT spi_port, 00;
 	CONSTANT segments_port, 01;
 	CONSTANT enables_port, 02;
-	CONSTANT delay_length, FF;
-	CONSTANT default_data, 04;
-
-	CONSTANT data_bank_1, 00;
-	CONSTANT data_bank_2, 01;
-	CONSTANT data_bank_3, 02;
-	CONSTANT data_bank_4, 03;
+	CONSTANT delay_length, 01;
+	CONSTANT prescale, 252'd;
 
 	NAMEREG s0, index;
 	NAMEREG s1, delay_count;
@@ -15,30 +10,41 @@
 	NAMEREG s3, enable_id;
 	NAMEREG s4, new_data;
 	NAMEREG s5, data_id;
+	
+	NAMEREG s6, offset;
+	NAMEREG s7, window;
+	NAMEREG s8, window_delay;
 
-	TABLE 7_segment_decode#, [01,4F,12,06,4C,24,20,0F,00,0C,08,60,31,42,30,38];
-
+	                         ; 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F  L  ~
+	TABLE 7_segment_decode#, [01,4F,12,06,4C,24,20,0F,00,0C,08,60,31,42,30,38,71,FF];
+	                     ; #  #  #  #  ~  E  L  E  C  ~  4  2  0  0  ~ 
+	;TABLE default_data#, [04,04,04,04,10,0E,10,0E,0C,11,04,02,00,00,11,11];
+	 TABLE default_data#, [01,02,03,04,05,06,07,08,09,0A,0B,0C,0D,0E,0F,10];
+                            ;0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+start:
+	LOAD index, 00;
 setup:
-	;Explicitly load the data_bank
-	LOAD sE, default_data;
-	LOAD index, data_bank_1;
-	STORE sE, (index);
+	LOAD sB, default_table'upper;
+	LOAD sA, default_table'lower;
+	ADD	 sA, index;
+	ADDCY sB, 00;
+	CALL@ (sB, sA);
+	STORE segments, (index);
 	ADD index, 01;
-	STORE sE, (index);
-	ADD index, 01;
-	STORE sE, (index);
-	ADD index, 01;
-	STORE sE, (index);
-	ADD index, 01;
-	STORE sE, (index);
+	TEST index, 00010000'b;
+	JUMP Z, setup;
 
-	LOAD delay_count, 00;
+	LOAD delay_count, delay_length;
 	LOAD enable_id, 11101110'b;
-	LOAD index, data_bank_1;
+	LOAD index, 00;
+	LOAD window_delay, prescale;
 
 	ENABLE INTERRUPT;
 
 main:
+	LOAD index, window;
+	ADD index, offset;
+	AND index, 00001111'b;
 	FETCH segments, (index);
 
 	LOAD sB, sevenseg'upper;
@@ -51,17 +57,25 @@ main:
 	OUTPUT enable_id, enables_port;
 
 delay:
-	SUB delay_count,01;
+	SUB delay_count, 01;
 	JUMP NC, delay;
 	LOAD delay_count, delay_length;
 
 maintenance:
-	ADD index, 01;
-	AND index, 00000011'b;
 	RL enable_id;
+	ADD offset, 01;
+	AND offset, 00000011'b;
+	ADD window_delay, 01;
+	JUMP NC, main;
+
+	LOAD window_delay, prescale;
+	ADD window, 01;
+	AND window, 00001111'b;
 	JUMP main;
 	
 sevenseg: LOAD&RETURN segments, 7_segment_decode#;
+
+default_table: LOAD&RETURN segments, default_data#;
 
 spi_rdy:
 	INPUT new_data, spi_port;
