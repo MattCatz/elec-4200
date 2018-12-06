@@ -1,8 +1,8 @@
 	CONSTANT spi_port, 00;
 	CONSTANT segments_port, 01;
 	CONSTANT enables_port, 02;
-	CONSTANT delay_length, 01;
-	CONSTANT prescale, 252'd;
+	CONSTANT delay_length, FF;
+	CONSTANT prescale, 168'd;
 
 	NAMEREG s0, index;
 	NAMEREG s1, delay_count;
@@ -10,19 +10,16 @@
 	NAMEREG s3, enable_id;
 	NAMEREG s4, new_data;
 	NAMEREG s5, data_id;
-	
 	NAMEREG s6, offset;
 	NAMEREG s7, window;
 	NAMEREG s8, window_delay;
 	NAMEREG s9, window_delay_2;
-	NAMEREG sA, table_lower;
-	NAMEREG sB, table_upper;
 
 	                         ; 0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F  L  ~
 	TABLE 7_segment_decode#, [01,4F,12,06,4C,24,20,0F,00,0C,08,60,31,42,30,38,71,FF];
 	                     ; #  #  #  #  ~  E  L  E  C  ~  4  2  0  0  ~ 
-	TABLE default_data#, [04,04,04,04,10,0E,10,0E,0C,11,04,02,00,00,11,11];
-	;TABLE default_data#, [01,02,03,04,05,06,07,08,09,0A,0B,0C,0D,0E,0F,10];
+	TABLE default_data#, [04,04,04,04,11,0E,10,0E,0C,11,04,02,00,00,11,11];
+
 start:
 	LOAD index, 00;
 setup:
@@ -38,8 +35,10 @@ setup:
 
 	LOAD delay_count, delay_length;
 	LOAD enable_id, 11101110'b;
+	LOAD enable_id, 01110111'b;
 	LOAD index, 00;
-	LOAD window_delay, prescale;
+	LOAD window_delay, 00;
+	LOAD window_delay_2, prescale;
 
 	ENABLE INTERRUPT;
 
@@ -66,7 +65,7 @@ delay:
 	LOAD delay_count, delay_length;
 
 maintenance:
-	RL enable_id;
+	RR enable_id;
 	ADD offset, 01;
 	AND offset, 00000011'b;
 	ADD window_delay, 01;
@@ -86,13 +85,16 @@ default_table: LOAD&RETURN segments, default_data#;
 spi_rdy:
 	INPUT new_data, spi_port;
 	LOAD data_id, new_data;
-	AND new_data, 00000011'b;
-	SR0 new_data;
-	SR0 new_data;
-	AND data_id, 00001111'b;
+	AND new_data, 00001111'b;
+	SR0 data_id;
+	SR0 data_id;
+	SR0 data_id;
+	SR0 data_id;
+	AND data_id, 00000011'b;
 	STORE new_data, (data_id);
-	RETURNI ENABLE;
+RETURNI ENABLE;
 
 interrupt_vector: 
 	ADDRESS 3FF;
 	JUMP spi_rdy;
+	
